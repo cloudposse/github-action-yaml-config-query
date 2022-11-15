@@ -1,6 +1,14 @@
-FROM alpine:3.16.2
+FROM alpine:3.11
 
-RUN apk add --no-cache bash
+# Install the cloudposse alpine repository
+ADD https://apk.cloudposse.com/ops@cloudposse.com.rsa.pub /etc/apk/keys/
+RUN echo "@cloudposse https://apk.cloudposse.com/3.11/vendor" >> /etc/apk/repositories
+
+ENV YQ_VERSION=4.30.1-r0
+ENV JQ_VERSION=1.6.0-r0
+RUN apk add --no-cache bash \
+    jq@cloudposse==${JQ_VERSION} \
+    yq@cloudposse==${YQ_VERSION}
 
 ENTRYPOINT ["/bin/bash"]
 

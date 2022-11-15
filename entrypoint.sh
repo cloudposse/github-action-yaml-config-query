@@ -2,4 +2,7 @@
 
 set -e
 
-echo "action-result=test" >> $GITHUB_OUTPUT
+echo "${CONFIG}" | \
+	yq  -o json -M -e | \
+	jq -c -e -M "${QUERY} | to_entries | map(\"\(.key)=\(.value|tostring)\")|.[]" | \
+	xargs -I {} echo "{}" >> $GITHUB_OUTPUT
