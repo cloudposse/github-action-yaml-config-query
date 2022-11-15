@@ -26,9 +26,9 @@ jobs:
         id: current
         with:
           query: .test
-          config: |
+          config: |-
             test: foo
-               sadajskdjaksjlak
+            sadajskdjaksjlak
 
     outputs:
       result: ${{ steps.current.conclusion }}
