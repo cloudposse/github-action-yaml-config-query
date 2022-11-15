@@ -27,7 +27,7 @@ jobs:
         with:
           query: .test
           config: |
-              test: foo
+            test: foo
             sadajskdjaksjlak
 
     outputs:
