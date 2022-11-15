@@ -14,13 +14,20 @@ OUTPUTS=($(echo "${CONFIG}" | \
 
 for item in "${OUTPUTS[@]}"
 do
-	OUTPUT="${item}"
-	OUTPUT="${OUTPUT//'%'/'%25'}"
-	OUTPUT="${OUTPUT//$'\n'/'%0A'}"
-	OUTPUT="${OUTPUT//$'\r'/'%0D'}"
-	OUTPUT="${OUTPUT//\\n/'%0A'}"
-	OUTPUT="${OUTPUT//\\r/'%0D'}"
-	OUTPUT="${OUTPUT//=/::}"
-	echo "::set-output name=${OUTPUT}"
+	NAME=$(echo ${item} | sed -e 's/^\(.*\)=\(.*\)$/\1/g')
+	VALUE=$(echo ${item} | sed -e 's/^\(.*\)=\(.*\)$/\2/g')
+	# OUTPUT="${item}"
+	# OUTPUT="${OUTPUT//'%'/'%25'}"
+	# OUTPUT="${OUTPUT//$'\n'/'%0A'}"
+	# OUTPUT="${OUTPUT//$'\r'/'%0D'}"
+	# OUTPUT="${OUTPUT//\\n/'%0A'}"
+	# OUTPUT="${OUTPUT//\\r/'%0D'}"
+	# OUTPUT="${OUTPUT//=/::}"
+	# echo "::set-output name=${OUTPUT}"
+
+	echo "${NAME}<<EOF" >> $GITHUB_OUTPUT
+	echo -e "${VALUE}" >> $GITHUB_OUTPUT
+	echo "EOF" >> $GITHUB_OUTPUT
+
 	# echo "${OUTPUT}" >> $GITHUB_OUTPUT
 done
