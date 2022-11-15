@@ -27,11 +27,10 @@ jobs:
         with:
           query: .
           config: |
-            test: "foo"
-            bar: "bar"
+            test: foo
+            bar: bar
 
     outputs:
-      result: ${{ steps.current.outputs.action-result }}
       test: "${{ steps.current.outputs.test }}"
       bar: "${{ steps.current.outputs.bar }}"
 
@@ -39,11 +38,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test]
     steps:
-      - uses: nick-fields/assert-action@v1
-        with:
-          expected: 'test'
-          actual: "${{ needs.test.outputs.result }}"
-
       - uses: nick-fields/assert-action@v1
         with:
           expected: 'foo'
