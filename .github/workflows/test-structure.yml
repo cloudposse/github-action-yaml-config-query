@@ -55,7 +55,7 @@ jobs:
       - uses: nick-fields/assert-action@v1
         with:
           expected: 'foo'
-          actual: ${{ fromJSON(needs.test.outputs.bar) }}
+          actual: ${{ fromJSON(needs.test.outputs.bar).test }}
 
   teardown:
     runs-on: ubuntu-latest
