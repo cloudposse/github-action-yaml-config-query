@@ -14,6 +14,8 @@ OUTPUTS=(
 
 ## There is a bug with multiline output
 ## Read this thread https://github.com/orgs/community/discussions/26288
+## Read this workaround https://trstringer.com/github-actions-multiline-strings/
+
 for item in "${OUTPUTS[@]}"
 do
 	NAME=$(echo ${item} | sed -e 's/^\(.*\)=\(.*\)$/\1/g')
