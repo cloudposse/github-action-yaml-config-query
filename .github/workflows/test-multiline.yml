@@ -28,7 +28,7 @@ jobs:
           query: .
           config: |
             test: |-
-              foo
+              foo"
               bar
             bar: |-
               bar
@@ -45,7 +45,7 @@ jobs:
       - uses: nick-fields/assert-action@v1
         with:
           expected: |-
-            foo
+            foo"
             bar
           actual: "${{ needs.test.outputs.test }}"
 
