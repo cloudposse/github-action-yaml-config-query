@@ -18,7 +18,7 @@ OUTPUTS=(
 
 for item in "${OUTPUTS[@]}"
 do
-	NAME=$(echo ${item} | sed -e 's/^\([^=]*\)=\(.*\)$/\1/g')
+	NAME=$(echo ${item}  | sed -e 's/^\([^=]*\)=\(.*\)$/\1/g')
 	VALUE=$(echo ${item} | sed -e 's/^\([^=]*\)=\(.*\)$/\2/g')
 	echo "${NAME}<<EOF" >> $GITHUB_OUTPUT
 	echo -e "${VALUE//\\\"/\"}" >> $GITHUB_OUTPUT

@@ -35,6 +35,12 @@ jobs:
               type=schedule
               type=ref,event=branch
               type=ref,event=pr
+              type=semver,pattern={{version}}
+              type=semver,pattern={{major}}.{{minor}}
+              type=semver,pattern={{major}}
+              type=raw,value=latest,enable={{is_default_branch}}
+              type=sha,format=long
+              3474817879-59-1
 
     outputs:
       test: "${{ steps.current.outputs.test }}"
@@ -58,6 +64,12 @@ jobs:
             type=schedule
             type=ref,event=branch
             type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,format=long
+            3474817879-59-1
           actual: "${{ needs.test.outputs.bar }}"
 
   teardown:
