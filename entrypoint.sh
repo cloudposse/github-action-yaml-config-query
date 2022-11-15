@@ -1,6 +1,7 @@
 #!/bin/bash -l
 
 set -e
+set -o pipefail
 
 echo "${CONFIG}" | \
 	yq  -o json -M -e | \

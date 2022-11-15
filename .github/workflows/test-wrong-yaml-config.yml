@@ -4,7 +4,7 @@ on:
 #  #
 #  # Added pull_request to register workflow from the PR.
 #  # Read more https://stackoverflow.com/questions/63362126/github-actions-how-to-run-a-workflow-created-on-a-non-master-branch-from-the-wo
-  pull_request: {}
+#  pull_request: {}
   workflow_dispatch: {}
 
 jobs:
@@ -41,7 +41,7 @@ jobs:
     steps:
       - uses: nick-fields/assert-action@v1
         with:
-          expected: 'failure'
+          expected: 'success'
           actual: "${{ needs.test.outputs.result }}"
 
       - uses: nick-fields/assert-action@v1
