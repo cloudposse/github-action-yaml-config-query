@@ -6,5 +6,5 @@ set -o pipefail
 echo "${CONFIG}" | \
 	yq  -o json -M -e | \
 	jq -c -e -M  "${QUERY} | to_entries | map(\"\(.key)=\(.value|tostring)\")|.[]" | \
-	sed -e 's/^"//' -e 's/"$//' | \
+	sed -e 's/^"//' -e 's/"$//' -e 's/%/$25/g' -e ':a' -e 'N' -e '$!ba' -e 's/\n/ /g' | \
 	xargs -I {} echo "{}" >> $GITHUB_OUTPUT
