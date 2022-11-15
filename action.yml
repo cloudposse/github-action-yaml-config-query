@@ -13,10 +13,8 @@ inputs:
     required: true
     description: "YAML config"
 runs:
-  using: "composite"
-  steps:
-    - id: context
-      shell: bash
-      run: |
-          echo "::set-output name=action-result::test"
-
+  using: 'docker'
+  image: 'Dockerfile'
+  env:
+    QUERY: ${{ inputs.query }}
+    CONFIG: ${{ inputs.config }}
