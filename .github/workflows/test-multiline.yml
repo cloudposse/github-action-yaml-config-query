@@ -70,7 +70,7 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
             type=sha,format=long
             3474817879-59-1
-      actual: "${{ needs.test.outputs.bar }}"
+          actual: "${{ needs.test.outputs.bar }}"
 
   teardown:
     runs-on: ubuntu-latest
