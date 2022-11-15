@@ -28,7 +28,7 @@ jobs:
           query: .test
           config: |
               test: foo
-            jskdjaksjlak
+            sadajskdjaksjlak
 
     outputs:
       result: ${{ steps.current.conclusion }}
