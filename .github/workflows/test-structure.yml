@@ -44,12 +44,12 @@ jobs:
     steps:
       - uses: nick-fields/assert-action@v1
         with:
-          expected: '{\"foo\":\"bar\"}'
+          expected: '{"foo":"bar"}'
           actual: "${{ needs.test.outputs.test }}"
 
       - uses: nick-fields/assert-action@v1
         with:
-          expected: '{\"test\":\"foo\"}'
+          expected: '{"test":"foo"}'
           actual: "${{ needs.test.outputs.bar }}"
 
       - uses: nick-fields/assert-action@v1
