@@ -41,7 +41,7 @@ jobs:
     steps:
       - uses: nick-fields/assert-action@v1
         with:
-          expected: 'success'
+          expected: 'failure'
           actual: "${{ needs.test.outputs.result }}"
 
       - uses: nick-fields/assert-action@v1
