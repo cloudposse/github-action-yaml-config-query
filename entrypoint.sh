@@ -18,5 +18,7 @@ do
 	OUTPUT="${OUTPUT//'%'/'%25'}"
 	OUTPUT="${OUTPUT//$'\n'/'%0A'}"
 	OUTPUT="${OUTPUT//$'\r'/'%0D'}"
+	OUTPUT="${OUTPUT//\\n/'%0A'}"
+	OUTPUT="${OUTPUT//\\r/'%0D'}"
 	echo "${OUTPUT}" >> $GITHUB_OUTPUT
 done
