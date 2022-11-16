@@ -96,17 +96,15 @@ Feel free to use it as reference and starting point.
 
 
 <!-- markdownlint-disable -->
+
 ## Inputs
 
 | Name | Description | Default | Required |
 |------|-------------|---------|----------|
-| param1 | Input parameter placeholder | true | true |
+| config | YAML config | N/A | true |
+| query | JQ Query | . | true |
 
-## Outputs
 
-| Name | Description |
-|------|-------------|
-| result1 | Output result placeholder |
 <!-- markdownlint-restore -->
 
 
