@@ -25,10 +25,15 @@ jobs:
       - uses: ./
         id: current
         with:
-          param1: 'false'
+          query: .foo
+          config: |
+            test: foo
+            bar: bar
 
     outputs:
-      result: "${{ steps.current.outputs.result1 }}"
+      result: ${{ steps.current.conclusion }}
+      test: "${{ steps.current.outputs.test }}"
+      bar: "${{ steps.current.outputs.bar }}"
 
   assert:
     runs-on: ubuntu-latest
@@ -36,8 +41,18 @@ jobs:
     steps:
       - uses: nick-fields/assert-action@v1
         with:
-          expected: 'false'
+          expected: 'failure'
           actual: "${{ needs.test.outputs.result }}"
+
+      - uses: nick-fields/assert-action@v1
+        with:
+          expected: ''
+          actual: "${{ needs.test.outputs.test }}"
+
+      - uses: nick-fields/assert-action@v1
+        with:
+          expected: ''
+          actual: "${{ needs.test.outputs.bar }}"
 
   teardown:
     runs-on: ubuntu-latest

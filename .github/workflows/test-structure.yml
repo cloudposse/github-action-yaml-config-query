@@ -1,4 +1,4 @@
-name: Test example positive
+name: Test structured outputs
 on:
 #  # Uncomment when test added first time to register workflow and comment it back after workflow would be registered
 #  #
@@ -27,8 +27,12 @@ jobs:
         with:
           query: .
           config: |
-            test: foo
-            bar: bar
+            test:
+              foo:
+                bar
+            bar:
+              test:
+                foo
 
     outputs:
       test: "${{ steps.current.outputs.test }}"
@@ -40,13 +44,18 @@ jobs:
     steps:
       - uses: nick-fields/assert-action@v1
         with:
-          expected: 'foo'
+          expected: '{"foo":"bar"}'
           actual: "${{ needs.test.outputs.test }}"
 
       - uses: nick-fields/assert-action@v1
         with:
-          expected: 'bar'
+          expected: '{"test":"foo"}'
           actual: "${{ needs.test.outputs.bar }}"
+
+      - uses: nick-fields/assert-action@v1
+        with:
+          expected: 'foo'
+          actual: ${{ fromJSON(needs.test.outputs.bar).test }}
 
   teardown:
     runs-on: ubuntu-latest
