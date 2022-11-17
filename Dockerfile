@@ -1,4 +1,4 @@
-FROM alpine:3.16
+FROM alpine:3.17
 
 # Install the cloudposse alpine repository
 ADD https://apk.cloudposse.com/ops@cloudposse.com.rsa.pub /etc/apk/keys/
