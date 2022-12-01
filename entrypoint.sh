@@ -11,7 +11,7 @@ OUTPUTS=(
 		echo "${CONFIG}" | \
 		yq -o json -M -e | \
 		jq . -c -e -M | \
-		jq -c -e -M -r  "${QUERY} | to_entries | map(\"\(.key)=\(.value|tostring)\")|.[]"
+		jq -c -e -M "${QUERY} | to_entries | map(\"\(.key)=\(.value|tostring)\")|.[]"
 	)
 )
 IFS="$oIFS"
