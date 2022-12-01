@@ -3,14 +3,19 @@
 set -e
 set -o pipefail
 
+oIFS="$IFS"
+IFS=$'\n'
 OUTPUTS=(
 	$(
 		echo "${CONFIG}" | \
-		yq  -o json -M -e | \
-		jq -c -e -M  "${QUERY} | to_entries | map(\"\(.key)=\(.value|tostring)\")|.[]" | \
+		yq -o json -M -e | \
+		jq -c -e -M "${QUERY} | to_entries | map(\"\(.key)=\(.value|tostring)\")|.[]" | \
 		sed -e 's/^"//' -e 's/"$//'
 	)
 )
+IFS="$oIFS"
+
+echo "${OUTPUTS}"
 
 ## There is a bug with multiline output
 ## Read this thread https://github.com/orgs/community/discussions/26288
