@@ -15,7 +15,7 @@ OUTPUTS=(
 )
 IFS="$oIFS"
 
-echo ${OUTPUTS}
+echo "${OUTPUTS}"
 
 ## There is a bug with multiline output
 ## Read this thread https://github.com/orgs/community/discussions/26288
