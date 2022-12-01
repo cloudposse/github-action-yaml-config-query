@@ -15,6 +15,8 @@ OUTPUTS=(
 )
 IFS="$oIFS"
 
+echo ${OUTPUTS}
+
 ## There is a bug with multiline output
 ## Read this thread https://github.com/orgs/community/discussions/26288
 ## Read this workaround https://trstringer.com/github-actions-multiline-strings/
