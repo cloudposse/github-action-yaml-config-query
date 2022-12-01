@@ -32,8 +32,7 @@ jobs:
             false:
               mask: "{\"one\": . + {}}"
     outputs:
-      test: "${{ steps.current.outputs.test }}"
-      bar: "${{ steps.current.outputs.bar }}"
+      mask: "${{ steps.current.outputs.mask }}"
 
   assert:
     runs-on: ubuntu-latest
