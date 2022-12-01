@@ -41,13 +41,9 @@ jobs:
     steps:
       - uses: nick-fields/assert-action@v1
         with:
-          expected: 'bar'
-          actual: "${{ needs.test.outputs.test }}"
+          expected: '{"one": . + {}}'
+          actual: "${{ needs.test.outputs.mask }}"
 
-      - uses: nick-fields/assert-action@v1
-        with:
-          expected: 'foo'
-          actual: "${{ needs.test.outputs.bar }}"
 
   teardown:
     runs-on: ubuntu-latest
