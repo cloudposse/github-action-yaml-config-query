@@ -30,7 +30,7 @@ jobs:
             true:
               mask: ". + {}"
             false:
-              mask: "{"one": . + {}}"
+              mask: "{\"one\": . + {}}"
     outputs:
       test: "${{ steps.current.outputs.test }}"
       bar: "${{ steps.current.outputs.bar }}"
