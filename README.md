@@ -1,6 +1,6 @@
 
 <!-- markdownlint-disable -->
-# example-github-action-composite [![Latest Release](https://img.shields.io/github/release/cloudposse/example-github-action-composite.svg)](https://github.com/cloudposse/example-github-action-composite/releases/latest) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
+# github-action-yaml-config-query [![Latest Release](https://img.shields.io/github/release/cloudposse/github-action-yaml-config-query.svg)](https://github.com/cloudposse/github-action-yaml-config-query/releases/latest) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
 <!-- markdownlint-restore -->
 
 [![README Header][readme_header_img]][readme_header_link]
@@ -28,7 +28,7 @@
 
 -->
 
-Template repository of composite GitHub Action
+Define YAML document, filter it with JSON query and get result as JSON string
 
 ---
 
@@ -58,8 +58,11 @@ It's 100% Open Source and licensed under the [APACHE2](LICENSE).
 
 ## Introduction
 
-This is template repository to create composite GitHub Actions. 
-Feel free to use it as reference and starting point.
+Utility action allow to declare YAML structured document as an input and get it's part as the action outputs 
+referenced using JQ.
+
+This action is useful in simplifing complext GitHub action workflows in different ways. 
+For examples follow [usage](#usage) section. 
 
 
 
@@ -69,6 +72,7 @@ Feel free to use it as reference and starting point.
 
 
 
+### Define constants 
 ```yaml
   name: Pull Request
   on:
@@ -77,17 +81,117 @@ Feel free to use it as reference and starting point.
       types: [opened, synchronize, reopened, closed, labeled, unlabeled]
 
   jobs:
+    demo:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Context
+          id: context
+          uses: cloudposse/github-action-yaml-config-query@main
+          with:
+            config: |
+              image: acme/example
+              tag: sha-${{ github.sha }}
+
+        - run: |
+          docker run ${{ steps.context.outputs.image }}:${{ steps.context.outputs.tag }}
+```
+
+### Implement if/else
+```yaml
+  name: Promote
+  on:
+    workflow_call:
+      inputs:
+        from:
+          required: false
+          type: string
+
+  jobs:
+    demo:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Context
+          id: from
+          uses: cloudposse/github-action-yaml-config-query@main      
+          with:
+            query: .${{ inputs.from == '' }}
+            config: |-
+              true: 
+                tag: ${{ github.sha }}
+              false:
+                tag: ${{ inputs.from }}
+
+        - run: |
+          docker tag acme/example:${{ steps.context.outputs.tag }}
+```
+
+### Implement switch
+```yaml
+  name: Build
+  on:
+    pull_request:
+      branches: [ 'main' ]
+      types: [opened, synchronize, reopened]
+    push:
+      branches: [ main ]
+    release:
+      types: [published]
+    
+  jobs:
     context:
       runs-on: ubuntu-latest
       steps:
-        - name: Example action
-          uses: cloudposse/example-github-action-composite@main
-          id: example
+        - name: Context
+          id: controller
+          uses: cloudposse/github-action-yaml-config-query@main      
           with:
-            param1: true
-
+            query: .${{ github.event_name }}
+            config: |-
+              pull_request: 
+                build: true
+                promote: false
+                test: true
+                deploy: ["preview"]
+              push:
+                build: true
+                promote: false  
+                test: true
+                deploy: ["dev"]
+              release:
+                build: false
+                promote: true
+                test: false
+                deploy: ["staging", "production"]
       outputs:
-        result: ${{ steps.example.outputs.result1 }}
+        build: ${{ steps.controlle.outputs.build }}
+        promote: ${{ steps.controlle.outputs.promote }}
+        test: ${{ steps.controlle.outputs.test }}
+        deploy: ${{ steps.controlle.outputs.deploy }}
+    
+    build:
+      needs: [context]
+      if: ${{ needs.context.outputs.build }}
+      uses: ./.github/workflows/reusable-build.yaml
+
+    test:
+      needs: [context, test]
+      if: ${{ needs.context.outputs.test }}
+      uses: ./.github/workflows/reusable-test.yaml
+
+    promote:
+      needs: [context]
+      if: ${{ needs.context.outputs.promote }}
+      uses: ./.github/workflows/reusable-promote.yaml
+
+    deploy:
+      needs: [context]
+      if: ${{ needs.context.outputs.deploy != '[]' }}
+      strategy:
+        matrix:
+          environment: ${{ fromJson(needs.context.outputs.deploy) }}        
+      uses: ./.github/workflows/reusable-deploy.yaml
+      with:
+        environment: ${{ matrix.environment }}
 ```
 
 
@@ -111,7 +215,7 @@ Feel free to use it as reference and starting point.
 
 ## Share the Love
 
-Like this project? Please give it a ★ on [our GitHub](https://github.com/cloudposse/example-github-action-composite)! (it helps us **a lot**)
+Like this project? Please give it a ★ on [our GitHub](https://github.com/cloudposse/github-action-yaml-config-query)! (it helps us **a lot**)
 
 Are you using this project or any of our other projects? Consider [leaving a testimonial][testimonial]. =)
 
@@ -135,7 +239,7 @@ For additional context, refer to some of these links.
 
 **Got a question?** We got answers.
 
-File a GitHub [issue](https://github.com/cloudposse/example-github-action-composite/issues), send us an [email][email] or join our [Slack Community][slack].
+File a GitHub [issue](https://github.com/cloudposse/github-action-yaml-config-query/issues), send us an [email][email] or join our [Slack Community][slack].
 
 [![README Commercial Support][readme_commercial_support_img]][readme_commercial_support_link]
 
@@ -183,7 +287,7 @@ Sign up for [our newsletter][newsletter] that covers everything on our technolog
 
 ### Bug Reports & Feature Requests
 
-Please use the [issue tracker](https://github.com/cloudposse/example-github-action-composite/issues) to report any bugs or file feature requests.
+Please use the [issue tracker](https://github.com/cloudposse/github-action-yaml-config-query/issues) to report any bugs or file feature requests.
 
 ### Developing
 
@@ -271,33 +375,33 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
 [![Beacon][beacon]][website]
 <!-- markdownlint-disable -->
   [logo]: https://cloudposse.com/logo-300x69.svg
-  [docs]: https://cpco.io/docs?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=docs
-  [website]: https://cpco.io/homepage?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=website
-  [github]: https://cpco.io/github?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=github
-  [jobs]: https://cpco.io/jobs?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=jobs
-  [hire]: https://cpco.io/hire?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=hire
-  [slack]: https://cpco.io/slack?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=slack
-  [linkedin]: https://cpco.io/linkedin?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=linkedin
-  [twitter]: https://cpco.io/twitter?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=twitter
-  [testimonial]: https://cpco.io/leave-testimonial?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=testimonial
-  [office_hours]: https://cloudposse.com/office-hours?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=office_hours
-  [newsletter]: https://cpco.io/newsletter?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=newsletter
-  [discourse]: https://ask.sweetops.com/?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=discourse
-  [email]: https://cpco.io/email?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=email
-  [commercial_support]: https://cpco.io/commercial-support?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=commercial_support
-  [we_love_open_source]: https://cpco.io/we-love-open-source?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=we_love_open_source
-  [terraform_modules]: https://cpco.io/terraform-modules?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=terraform_modules
+  [docs]: https://cpco.io/docs?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=docs
+  [website]: https://cpco.io/homepage?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=website
+  [github]: https://cpco.io/github?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=github
+  [jobs]: https://cpco.io/jobs?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=jobs
+  [hire]: https://cpco.io/hire?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=hire
+  [slack]: https://cpco.io/slack?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=slack
+  [linkedin]: https://cpco.io/linkedin?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=linkedin
+  [twitter]: https://cpco.io/twitter?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=twitter
+  [testimonial]: https://cpco.io/leave-testimonial?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=testimonial
+  [office_hours]: https://cloudposse.com/office-hours?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=office_hours
+  [newsletter]: https://cpco.io/newsletter?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=newsletter
+  [discourse]: https://ask.sweetops.com/?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=discourse
+  [email]: https://cpco.io/email?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=email
+  [commercial_support]: https://cpco.io/commercial-support?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=commercial_support
+  [we_love_open_source]: https://cpco.io/we-love-open-source?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=we_love_open_source
+  [terraform_modules]: https://cpco.io/terraform-modules?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=terraform_modules
   [readme_header_img]: https://cloudposse.com/readme/header/img
-  [readme_header_link]: https://cloudposse.com/readme/header/link?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=readme_header_link
+  [readme_header_link]: https://cloudposse.com/readme/header/link?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=readme_header_link
   [readme_footer_img]: https://cloudposse.com/readme/footer/img
-  [readme_footer_link]: https://cloudposse.com/readme/footer/link?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=readme_footer_link
+  [readme_footer_link]: https://cloudposse.com/readme/footer/link?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=readme_footer_link
   [readme_commercial_support_img]: https://cloudposse.com/readme/commercial-support/img
-  [readme_commercial_support_link]: https://cloudposse.com/readme/commercial-support/link?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/example-github-action-composite&utm_content=readme_commercial_support_link
-  [share_twitter]: https://twitter.com/intent/tweet/?text=example-github-action-composite&url=https://github.com/cloudposse/example-github-action-composite
-  [share_linkedin]: https://www.linkedin.com/shareArticle?mini=true&title=example-github-action-composite&url=https://github.com/cloudposse/example-github-action-composite
-  [share_reddit]: https://reddit.com/submit/?url=https://github.com/cloudposse/example-github-action-composite
-  [share_facebook]: https://facebook.com/sharer/sharer.php?u=https://github.com/cloudposse/example-github-action-composite
-  [share_googleplus]: https://plus.google.com/share?url=https://github.com/cloudposse/example-github-action-composite
-  [share_email]: mailto:?subject=example-github-action-composite&body=https://github.com/cloudposse/example-github-action-composite
-  [beacon]: https://ga-beacon.cloudposse.com/UA-76589703-4/cloudposse/example-github-action-composite?pixel&cs=github&cm=readme&an=example-github-action-composite
+  [readme_commercial_support_link]: https://cloudposse.com/readme/commercial-support/link?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content=readme_commercial_support_link
+  [share_twitter]: https://twitter.com/intent/tweet/?text=github-action-yaml-config-query&url=https://github.com/cloudposse/github-action-yaml-config-query
+  [share_linkedin]: https://www.linkedin.com/shareArticle?mini=true&title=github-action-yaml-config-query&url=https://github.com/cloudposse/github-action-yaml-config-query
+  [share_reddit]: https://reddit.com/submit/?url=https://github.com/cloudposse/github-action-yaml-config-query
+  [share_facebook]: https://facebook.com/sharer/sharer.php?u=https://github.com/cloudposse/github-action-yaml-config-query
+  [share_googleplus]: https://plus.google.com/share?url=https://github.com/cloudposse/github-action-yaml-config-query
+  [share_email]: mailto:?subject=github-action-yaml-config-query&body=https://github.com/cloudposse/github-action-yaml-config-query
+  [beacon]: https://ga-beacon.cloudposse.com/UA-76589703-4/cloudposse/github-action-yaml-config-query?pixel&cs=github&cm=readme&an=github-action-yaml-config-query
 <!-- markdownlint-restore -->
