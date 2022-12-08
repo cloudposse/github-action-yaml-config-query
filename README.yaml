@@ -5,7 +5,7 @@
 #
 
 # Name of this project
-name: example-github-action-composite
+name: github-action-yaml-config-query
 
 # Tags of this project
 tags:
@@ -18,13 +18,13 @@ tags:
 license: "APACHE2"
 
 # Canonical GitHub repo
-github_repo: cloudposse/example-github-action-composite
+github_repo: cloudposse/github-action-yaml-config-query
 
 # Badges to display
 badges:
   - name: "Latest Release"
-    image: "https://img.shields.io/github/release/cloudposse/example-github-action-composite.svg"
-    url: "https://github.com/cloudposse/example-github-action-composite/releases/latest"
+    image: "https://img.shields.io/github/release/cloudposse/github-action-yaml-config-query.svg"
+    url: "https://github.com/cloudposse/github-action-yaml-config-query/releases/latest"
   - name: "Slack Community"
     image: "https://slack.cloudposse.com/badge.svg"
     url: "https://slack.cloudposse.com"
@@ -32,11 +32,14 @@ badges:
 related: []
 
 # Short description of this project
-description: Template repository of composite GitHub Action
+description: Define YAML document, filter it with JSON query and get result as JSON string
 
 introduction: |-
-  This is template repository to create composite GitHub Actions. 
-  Feel free to use it as reference and starting point.
+  Utility action allow to declare YAML structured document as an input and get it's part as the action outputs 
+  referenced using JQ.
+  
+  This action is useful in simplifing complext GitHub action workflows in different ways. 
+  For examples follow [usage](#usage) section. 
 
 references:
   - name: "github-actions-workflows"
@@ -48,6 +51,7 @@ references:
 
 # How to use this project
 usage: |-
+  ### Define constants 
   ```yaml
     name: Pull Request
     on:
@@ -56,17 +60,117 @@ usage: |-
         types: [opened, synchronize, reopened, closed, labeled, unlabeled]
 
     jobs:
+      demo:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Context
+            id: context
+            uses: cloudposse/github-action-yaml-config-query@main
+            with:
+              config: |
+                image: acme/example
+                tag: sha-${{ github.sha }}
+  
+          - run: |
+            docker run ${{ steps.context.outputs.image }}:${{ steps.context.outputs.tag }}
+  ```
+
+  ### Implement if/else
+  ```yaml
+    name: Promote
+    on:
+      workflow_call:
+        inputs:
+          from:
+            required: false
+            type: string
+
+    jobs:
+      demo:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Context
+            id: from
+            uses: cloudposse/github-action-yaml-config-query@main      
+            with:
+              query: .${{ inputs.from == '' }}
+              config: |-
+                true: 
+                  tag: ${{ github.sha }}
+                false:
+                  tag: ${{ inputs.from }}
+  
+          - run: |
+            docker tag acme/example:${{ steps.context.outputs.tag }}
+  ```
+
+  ### Implement switch
+  ```yaml
+    name: Build
+    on:
+      pull_request:
+        branches: [ 'main' ]
+        types: [opened, synchronize, reopened]
+      push:
+        branches: [ main ]
+      release:
+        types: [published]
+      
+    jobs:
       context:
         runs-on: ubuntu-latest
         steps:
-          - name: Example action
-            uses: cloudposse/example-github-action-composite@main
-            id: example
+          - name: Context
+            id: controller
+            uses: cloudposse/github-action-yaml-config-query@main      
             with:
-              param1: true
-  
+              query: .${{ github.event_name }}
+              config: |-
+                pull_request: 
+                  build: true
+                  promote: false
+                  test: true
+                  deploy: ["preview"]
+                push:
+                  build: true
+                  promote: false  
+                  test: true
+                  deploy: ["dev"]
+                release:
+                  build: false
+                  promote: true
+                  test: false
+                  deploy: ["staging", "production"]
         outputs:
-          result: ${{ steps.example.outputs.result1 }}
+          build: ${{ steps.controlle.outputs.build }}
+          promote: ${{ steps.controlle.outputs.promote }}
+          test: ${{ steps.controlle.outputs.test }}
+          deploy: ${{ steps.controlle.outputs.deploy }}
+      
+      build:
+        needs: [context]
+        if: ${{ needs.context.outputs.build }}
+        uses: ./.github/workflows/reusable-build.yaml
+
+      test:
+        needs: [context, test]
+        if: ${{ needs.context.outputs.test }}
+        uses: ./.github/workflows/reusable-test.yaml
+
+      promote:
+        needs: [context]
+        if: ${{ needs.context.outputs.promote }}
+        uses: ./.github/workflows/reusable-promote.yaml
+
+      deploy:
+        needs: [context]
+        if: ${{ needs.context.outputs.deploy != '[]' }}
+        strategy:
+          matrix:
+            environment: ${{ fromJson(needs.context.outputs.deploy) }}        
+        uses: ./.github/workflows/reusable-deploy.yaml
+        with:
+          environment: ${{ matrix.environment }}
   ```
 
 include:
