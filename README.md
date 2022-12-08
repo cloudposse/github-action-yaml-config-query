@@ -28,7 +28,7 @@
 
 -->
 
-Define YAML document, filter it with JSON query and get result as JSON string
+Define YAML document, filter it with JSON query and get result as outputs
 
 ---
 
