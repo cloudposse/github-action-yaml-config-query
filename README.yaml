@@ -32,7 +32,7 @@ badges:
 related: []
 
 # Short description of this project
-description: Define YAML document, filter it with JSON query and get result as JSON string
+description: Define YAML document, filter it with JSON query and get result as outputs
 
 introduction: |-
   Utility action allow to declare YAML structured document as an input and get it's part as the action outputs 
