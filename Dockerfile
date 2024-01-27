@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/alpine:3.17.3
+FROM public.ecr.aws/docker/library/alpine:3.19.1
 
 # Install the cloudposse alpine repository
 ADD https://apk.cloudposse.com/ops@cloudposse.com.rsa.pub /etc/apk/keys/
