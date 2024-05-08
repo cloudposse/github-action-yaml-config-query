@@ -1,0 +1,7 @@
+# Upstream changes from _extends are only recognized when modifications are made to this file in the default branch.
+_extends: .github
+repository:
+  name: github-action-yaml-config-query
+  description: Define YAML document, filter it with JSON query and get result as outputs
+  homepage: https://cloudposse.com/accelerate
+  topics: ""
