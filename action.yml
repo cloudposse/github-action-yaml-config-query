@@ -22,6 +22,11 @@ runs:
           jqlang/jq: jq-1.7
           mikefarah/yq: v4.30.1
 
+    - shell: bash
+      run: |-
+        jq --help
+        yq --help
+
 #  env:
 #    QUERY: ${{ inputs.query }}
 #    CONFIG: ${{ inputs.config }}
