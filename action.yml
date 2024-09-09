@@ -13,8 +13,15 @@ inputs:
     required: true
     description: "YAML config"
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  env:
-    QUERY: ${{ inputs.query }}
-    CONFIG: ${{ inputs.config }}
+  using: "composite"
+  steps:
+    - uses: cloudposse-github-actions/install-gh-releases@v1
+      with:
+        cache: true
+        config: |-
+          jqlang/jq: jq-1.7
+          mikefarah/yq: v4.30.1
+
+#  env:
+#    QUERY: ${{ inputs.query }}
+#    CONFIG: ${{ inputs.config }}
