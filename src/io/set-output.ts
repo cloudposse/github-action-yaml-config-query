@@ -6,5 +6,7 @@ function setOutputWithDebug(key: string, value: unknown): void {
 }
 
 export default function setOutput(outputs: Map<string, string>): void {
-  setOutputWithDebug('found', 1)
+    for (const [key, value] of outputs) {
+        setOutputWithDebug(key, value)
+    }
 }
