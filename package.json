@@ -67,9 +67,7 @@
     ]
   },
   "dependencies": {
-    "@actions/core": "^1.10.0",
-    "@actions/github": "^5.1.1",
-    "@octokit/plugin-throttling": "^5.0.1"
+    "@actions/core": "^1.10.0"
   },
   "devDependencies": {
     "@types/node": "^20.4.4",
@@ -81,7 +79,6 @@
     "@typescript-eslint/eslint-plugin": "^7.17.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@vercel/ncc": "^0.38.1",
-    "eslint-plugin-github": "^5.0.1",
     "eslint-plugin-jest": "^28.8.0",
     "eslint-plugin-jsonc": "^2.16.0",
     "eslint-plugin-prettier": "^5.2.1",

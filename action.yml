@@ -13,19 +13,8 @@ inputs:
     required: true
     description: "YAML config"
 runs:
-  using: "composite"
-  steps:
-    - uses: cloudposse-github-actions/install-gh-releases@v1
-      with:
-        cache: true
-        config: |-
-          jqlang/jq: jq-1.7
-          mikefarah/yq: v4.30.1
-
-    - shell: bash
-      run: |-
-        jq --help
-        yq --help
+  using: node20
+  main: 'dist/index.js'
 
 #  env:
 #    QUERY: ${{ inputs.query }}
