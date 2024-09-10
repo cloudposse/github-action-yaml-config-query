@@ -1,19 +1,7 @@
 import {expect, test} from '@jest/globals'
-import * as octokit from "@octokit/core";
-import * as github from "@actions/github";
 
 // @ts-ignore
-import createDummyPR from './create-dummy-pr'
-import getLastPullRequest from '../src/get-last-pr'
-import getPullRequestByID from "../src/adapter/get-pr-by-id";
-import os from "os";
-import {GitHub} from "@actions/github/lib/utils";
 
-import {Api} from '@octokit/plugin-rest-endpoint-methods/dist-types/types'
-import {PaginateInterface} from "@octokit/plugin-paginate-rest"
-import {Constructor} from "@octokit/core/dist-types/types";
-
-let getOctokitMock: jest.SpiedFunction<typeof github.getOctokit>
 describe('action', () => {
     it('mock test', async () => {
         expect(1).toBe(1)
