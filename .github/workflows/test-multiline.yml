@@ -28,8 +28,9 @@ jobs:
           cache: yarn
 
       - name: install dependencies
-        run: yarn add ci
-
+        run: |-
+          yarn add ci
+          yarn build
 
       - uses: ./
         id: current
