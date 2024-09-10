@@ -1,0 +1,85 @@
+name: build-and-test
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+
+jobs:
+  check-dist:
+    name: "check-dist matches source"
+    uses: cloudposse/github-actions-workflows/.github/workflows/ci-typescript-app-check-dist.yml@main
+    with:
+      node-version: 20.x
+
+  unit-test:
+    name: "unit tests"
+    runs-on: ubuntu-latest
+    needs: check-dist
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: yarn
+      - name: install dependencies
+        run: yarn add ci
+      - uses: cloudposse/github-action-setup-atmos@v2
+        with:
+          install-wrapper: false
+      - name: run unit tests
+        run: yarn test
+
+  test-if-closed-pr-is-found:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: yarn add ci
+      - name: Build Action
+        run: |
+          yarn build
+      - name: Run Action
+        uses: ./
+        id: pr
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sha: "44b060a85b83f5baf49f523d8a58444ccca52ead"
+      - name: Assert PR properties
+        run: |
+          [[ ${{ steps.pr.outputs.found }} == true ]] || (echo "outputs.found != true"; exit 1)
+          [[ ${{ steps.pr.outputs.number }} == 5 ]] || (echo "outputs.number != 5"; exit 1)
+
+  test-if-closed-pr-is-not-found-when-filtering-closed-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: yarn add ci
+      - name: Build Action
+        run: |
+          yarn build
+      - name: Run Action
+        uses: ./
+        id: pr
+        with:
+          filterOutClosed: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sha: "44b060a85b83f5baf49f523d8a58444ccca52ead"
+      - name: Exit 1, if PR was falsely found
+        if: steps.pr.outputs.found != 'false'
+        run: echo "if 'outputs.found' falsely triggered"; exit 1
+      - name: Assert PR properties
+        run: |
+          [[ '${{ steps.pr.outputs.number }}' == '' ]] || (echo "PR falsely found"; exit 1)
