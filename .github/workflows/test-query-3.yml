@@ -35,7 +35,7 @@ jobs:
       - uses: ./
         id: current
         with:
-          query: .false
+          query: ."false"
           config: |
             true:
               mask: ". + {}"

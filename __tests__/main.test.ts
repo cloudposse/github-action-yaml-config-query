@@ -44,4 +44,17 @@ describe('action', () => {
         expect(result.get('test')).toBe('{"foo":"bar"}')
         expect(result.get('bar')).toBe('{"test":"foo"}')
     })
+
+    it('type strict query', async () => {
+        let query = '."false"'
+        let config = `
+        true:
+          mask: ". + {}"
+        false:
+          mask: "{\\"one\\": . + {}}"
+        `;
+        let result = query_config(query, config)
+        expect(result.get('mask')).toBe('{"one": . + {}}')
+    })
+
 })
