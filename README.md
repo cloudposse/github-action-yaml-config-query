@@ -1,8 +1,9 @@
 
 
 <!-- markdownlint-disable -->
-# github-action-yaml-config-query <a href="https://cpco.io/homepage?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/github-action-yaml-config-query&utm_content="><img align="right" src="https://cloudposse.com/logo-300x69.svg" width="150" /></a>
-<a href="https://github.com/cloudposse/github-action-yaml-config-query/releases/latest"><img src="https://img.shields.io/github/release/cloudposse/github-action-yaml-config-query.svg" alt="Latest Release"/></a><a href="https://slack.cloudposse.com"><img src="https://slack.cloudposse.com/badge.svg" alt="Slack Community"/></a>
+<a href="https://cpco.io/homepage"><img src="https://github.com/cloudposse/github-action-yaml-config-query/blob/main/.github/banner.png?raw=true" alt="Project Banner"/></a><br/>
+    <p align="right">
+<a href="https://github.com/cloudposse/github-action-yaml-config-query/releases/latest"><img src="https://img.shields.io/github/release/cloudposse/github-action-yaml-config-query.svg" alt="Latest Release"/></a><a href="https://slack.cloudposse.com"><img src="https://slack.cloudposse.com/badge.svg" alt="Slack Community"/></a></p>
 <!-- markdownlint-restore -->
 
 <!--
@@ -37,7 +38,19 @@ Utility action allow to declare YAML structured document as an input and get it'
 referenced using JQ.
 
 This action is useful in simplifing complext GitHub action workflows in different ways. 
-For examples follow [usage](#usage) section. 
+For examples follow [usage](#usage) section.
+
+## Migration `v0` to `v1`
+
+There is an issue [The query contains `true` or `false` fails with an error](https://github.com/alexxander/jq-tools/issues/4).
+A workaround is to use a quote around `"true" and `"false" in a query.
+
+To migrate from `v0` to `v1`, quote in your queries all `true`/`false` and Github actions substitutions resovled to the values.
+
+### Example
+
+* `query: .true` replace with `query: ."true"`
+* `query: .${{ inputs.from == '' }}` replace with `query: ."${{ inputs.from == '' }}"`  
 
 
 
@@ -86,7 +99,7 @@ For examples follow [usage](#usage) section.
           id: from
           uses: cloudposse/github-action-yaml-config-query@main      
           with:
-            query: .${{ inputs.from == '' }}
+            query: ."${{ inputs.from == '' }}"
             config: |-
               true: 
                 tag: ${{ github.sha }}
