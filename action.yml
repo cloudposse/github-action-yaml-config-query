@@ -13,8 +13,9 @@ inputs:
     required: true
     description: "YAML config"
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  env:
-    QUERY: ${{ inputs.query }}
-    CONFIG: ${{ inputs.config }}
+  using: node20
+  main: 'dist/index.js'
+
+#  env:
+#    QUERY: ${{ inputs.query }}
+#    CONFIG: ${{ inputs.config }}
