@@ -11,9 +11,9 @@ on:
 jobs:
   check-dist:
     name: "check-dist matches source"
-    uses: cloudposse/github-actions-workflows/.github/workflows/ci-typescript-app-check-dist.yml@main
+    uses: cloudposse/.github/.github/workflows/ci-typescript-app-check-dist.yml@main
     with:
-      node-version: 20.x
+      node-version: 24.x
 
   unit-test:
     name: "unit tests"
