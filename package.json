@@ -68,7 +68,7 @@
   },
   "dependencies": {
     "@actions/core": "^1.10.0",
-    "@jq-tools/jq": "^0.0.10",
+    "@jq-tools/jq": "^0.0.11",
     "yaml": "^2.5.1"
   },
   "devDependencies": {
