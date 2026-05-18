@@ -566,10 +566,10 @@
     "@types/yargs" "^17.0.8"
     chalk "^4.0.0"
 
-"@jq-tools/jq@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@jq-tools/jq/-/jq-0.0.10.tgz#339c0d5853f7c1d29c2fe1e2772fa5071bb26d0e"
-  integrity sha512-XHBjZ7A8M5fy2Ugu2FV7ITSMjbQBTjGSdxTHo1xNFLKfaHwBxoY+H1/05bIhzKjBxER40k1I8PN09dYChSVF3w==
+"@jq-tools/jq@^0.0.11":
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/@jq-tools/jq/-/jq-0.0.11.tgz#4e5d8b308606903893587ee463e2a9543ac74bdc"
+  integrity sha512-wTTHKZ/sBq1ECm9DGwYMesRfylbE4LIzXxsfThjv/MPTOsLEeXewKjG0nd3B7G0nG+d8SPKZq1Do677QxAso7w==
 
 "@jridgewell/gen-mapping@^0.3.5":
   version "0.3.5"

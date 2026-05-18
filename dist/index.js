@@ -29015,8 +29015,31 @@ exports.builtinNativeFilters = Object.assign({ *'path/1'(input, value) {
     *'tojson/0'() {
         throw (0, evaluateErrors_1.notImplementedError)('tojson/0');
     },
-    *'tonumber/0'() {
-        throw (0, evaluateErrors_1.notImplementedError)('tonumber/0');
+    *'tonumber/0'(input) {
+        const type = (0, utils_1.typeOf)(input);
+        switch (type) {
+            case utils_1.Type.string: {
+                const parsedNumber = Number(input);
+                if (isNaN(parsedNumber)) {
+                    throw Error(`${type} (${(0, utils_1.toString)(input)}) cannot be parsed as number`);
+                }
+                if (!isFinite(parsedNumber)) {
+                    yield parsedNumber > 0 ? Number.MAX_VALUE : -1 * Number.MAX_VALUE;
+                    break;
+                }
+                yield parsedNumber;
+                break;
+            }
+            case utils_1.Type.number:
+                yield input;
+                break;
+            case utils_1.Type.object:
+            case utils_1.Type.array:
+            case utils_1.Type.null:
+            case utils_1.Type.boolean:
+            default:
+                throw Error(`${type} (${(0, utils_1.toString)(input)}) cannot be parsed as number`);
+        }
     },
     *'tostring/0'(input) {
         yield (0, utils_1.toString)(input);
